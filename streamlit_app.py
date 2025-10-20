@@ -40,7 +40,12 @@ h1,h2,h3,h4,h5 {{ color:{PRIMARY}; font-weight:800; }}
 
 # ------------- LOAD API -------------
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+if not api_key:
+    st.error("Missing OpenAI API key")
+    st.stop()
+
+client = OpenAI(api_key=api_key)
 
 # ------------- LANGUAGE PACK -------------
 LANGS = {
