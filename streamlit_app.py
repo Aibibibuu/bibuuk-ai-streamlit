@@ -11,20 +11,24 @@ from pathlib import Path
 from openai import OpenAI
 
 # ------------- LOAD ENV + API KEY -------------
-env_path = Path(__file__).parent / ".env"
-load_dotenv(dotenv_path=env_path)
-
-api_key = os.getenv("OPENAI_API_KEY")
+# Try to get API key from Streamlit Secrets first, then fall back to .env file
+api_key = st.secrets.get("OPENAI_API_KEY")
 
 if not api_key:
-    st.error("❌ Missing OpenAI API key. Please add it to your .env file.")
+    # If not in Streamlit Cloud, try loading from .env
+    env_path = Path(__file__).parent / ".env"
+    load_dotenv(dotenv_path=env_path)
+    api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    st.error("❌ Missing OpenAI API key. Please add it to your .env file locally or to your Streamlit secrets in cloud deployment.")
     st.stop()
 
 client = OpenAI(api_key=api_key)
 
 # ------------- CONFIG / THEME -------------
 PRIMARY = "#47326e"
-BG = "#FAF7FF"
+BG = "#B7A8D1"
 FONT = "Inter, -apple-system, system-ui, Segoe UI, Roboto, sans-serif"
 
 st.set_page_config(page_title="Shelf Scanner — Book & Goal Advisor", page_icon="📚", layout="wide")
